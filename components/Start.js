@@ -8,7 +8,7 @@ export default class Start extends Component {
     super(props);
     this.state = {
       name: '',
-      color: '#090C08',
+      color: '#B9C6AE',
     };
   }
 
@@ -34,18 +34,34 @@ export default class Start extends Component {
                 <TouchableOpacity
                   style={[styles.color, styles.firstColor]}
                   onPress={() => this.setState({ color: '#090C08' })}
+                  accessible={true}
+                  accessibilityLabel="color option: black"
+                  accessibilityHint="Let's you choose this color to be the background color of your chat screen"
+                  accessibilityRole="button"
                 />
                 <TouchableOpacity
                   style={[styles.color, styles.secondColor]}
                   onPress={() => this.setState({ color: '#474056' })}
+                  accessible={true}
+                  accessibilityLabel="color option: purple"
+                  accessibilityHint="Let's you choose this color to be the background color of your chat screen"
+                  accessibilityRole="button"
                 />
                 <TouchableOpacity
                   style={[styles.color, styles.thirdColor]}
                   onPress={() => this.setState({ color: '#8A95A5' })}
+                  accessible={true}
+                  accessibilityLabel="color option: blue"
+                  accessibilityHint="Let's you choose this color to be the background color of your chat screen"
+                  accessibilityRole="button"
                 />
                 <TouchableOpacity
                   style={[styles.color, styles.forthColor]}
                   onPress={() => this.setState({ color: '#B9C6AE' })}
+                  accessible={true}
+                  accessibilityLabel="color option: green (default)"
+                  accessibilityHint="Let's you choose this color to be the background color of your chat screen"
+                  accessibilityRole="button"
                 />
 
               </View>
@@ -55,7 +71,9 @@ export default class Start extends Component {
                 style={styles.button}
                 onPress={() =>
                   this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color })
-                } >
+                }
+                accessible={true}
+                accessibilityRole="button" >
                 <Text style={styles.buttonText}>Start Chatting</Text>
               </TouchableOpacity>
             </View>
@@ -86,7 +104,7 @@ const styles = StyleSheet.create({
     width: '88%',
     height: '44%',
     backgroundColor: '#FFFFFF',
-    marginBottom: '20%',
+    marginBottom: '10%',
     paddingTop: '6%',
     paddingBottom: '6%',
     alignItems: 'center',
