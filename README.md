@@ -34,7 +34,7 @@ reader so that I can engage with a chat interface
 1. Install Expo CLI
 
 ```
-npm insatll expo-cli --location=global
+npm install expo-cli --global
 ```
 
 2. Create a new expo project
