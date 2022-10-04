@@ -132,7 +132,6 @@ export default class Chat extends React.Component {
           //update user state with currently active user data
           this.setState({
             uid: user.uid,
-            messages: [],
             user: {
               _id: user.uid,
               name: name,
