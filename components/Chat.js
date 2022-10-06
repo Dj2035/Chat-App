@@ -1,15 +1,18 @@
 import React from 'react';
 import {
-  View, Text, StyleSheet, Platform, KeyboardAvoidingView
+  View, StyleSheet, Platform, KeyboardAvoidingView
 } from 'react-native';
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import CustomActions from './CustomActions';
+import MapView from 'react-native-maps';
 
-
-const firebase = require('firebase');
-require('firebase/firestore');
+import firebase from 'firebase';
+import 'firebase/firestore';
+//const firebase = require('firebase');
+//require('firebase/firestore');
 
 
 export default class Chat extends React.Component {
@@ -21,9 +24,11 @@ export default class Chat extends React.Component {
       isConnected: false,
       user: {
         _id: '',
-        avatar: '',
         name: '',
-      }
+        avatar: '',
+      },
+      image: null,
+      location: null,
     }
 
     //Firestore database credentials
@@ -44,7 +49,7 @@ export default class Chat extends React.Component {
     this.referenceChatMessages = firebase.firestore().collection("messages");
   }
 
-  // Loops through documents in firestore collection and adds them to the state
+  //Retrieve collection data & store in messages
   onCollectionUpdate = (querySnapshot) => {
     const messages = [];
     // Go through each document
@@ -60,6 +65,8 @@ export default class Chat extends React.Component {
           name: data.user.name,
           avatar: data.user.avatar,
         },
+        image: data.image || null,
+        location: data.location || null,
       });
     });
     this.setState({
@@ -135,6 +142,7 @@ export default class Chat extends React.Component {
             user: {
               _id: user.uid,
               name: name,
+              avatar: "https://placeimg.com/140/140/any",
             },
           });
 
@@ -173,6 +181,8 @@ export default class Chat extends React.Component {
       text: message.text || '',
       createdAt: message.createdAt,
       user: message.user,
+      image: message.image || null,
+      location: message.location || null,
     });
   }
 
@@ -182,8 +192,9 @@ export default class Chat extends React.Component {
     this.setState(previousState => ({
       messages: GiftedChat.append(previousState.messages, messages),
     }), () => {
-      this.addMessages();
+      this.addMessages(messages[0]);
       this.saveMessages();
+      this.deleteMessages();
     });
   }
 
@@ -197,18 +208,69 @@ export default class Chat extends React.Component {
     )
   }
 
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+
+  renderCustomView(props) {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{
+            width: 150,
+            height: 100,
+            borderRadius: 13,
+            margin: 3
+          }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
+  }
+
+  handleLongPress(context, message) {
+    console.log("long press function");
+    const options = ["Delete Message", "Cancel"];
+    const cancelButtonIndex = options.length - 1;
+    context.actionSheet().showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+      },
+      (buttonIndex) => {
+        switch (buttonIndex) {
+          case 0:
+            console.log("deleting message");
+            return this.deleteMessages();
+          default:
+            break;
+        }
+      }
+    );
+  }
+
   render() {
     let { color, name } = this.props.route.params;
 
     return (
       <View style={[styles.container, { backgroundColor: color }]} >
         <GiftedChat
+          renderCustomView={this.renderCustomView}
+          renderActions={this.renderCustomActions}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
           renderBubble={this.renderBubble.bind(this)}
           alwaysShowSend
           messages={this.state.messages}
           showAvatarForEveryMessage={true}
           onSend={messages => this.onSend(messages)}
+          onLongPress={this.handleLongPress}
           user={{
             _id: this.state.uid,
             name: name,
