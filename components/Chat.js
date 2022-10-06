@@ -125,36 +125,41 @@ export default class Chat extends React.Component {
     let { name } = this.props.route.params;
     this.props.navigation.setOptions({ title: name });
 
+    // Check (anonymous) user authentication through firebase
+    this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        firebase.auth().signInAnonymously();
+      }
+
+      //update user state with currently active user data
+      this.setState({
+        uid: user.uid,
+        user: {
+          _id: user.uid,
+          name: name,
+          avatar: "https://placeimg.com/140/140/any",
+        },
+      });
+    });
+
     NetInfo.fetch().then(connection => {
       if (connection.isConnected) {
         this.setState({ isConnected: true });
         console.log('online');
 
-        // Check (anonymous) user authentication through firebase
-        this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
-          if (!user) {
-            firebase.auth().signInAnonymously();
-          }
+        // Get messages from firestore
+        this.referenceChatMessages = firebase.firestore().collection('messages');
 
-          //update user state with currently active user data
-          this.setState({
-            uid: user.uid,
-            user: {
-              _id: user.uid,
-              name: name,
-              avatar: "https://placeimg.com/140/140/any",
-            },
-          });
+        // listening to messages collection changes
+        this.unsubscribe = this.referenceChatMessages
+          .orderBy("createdAt", "desc")
+          .onSnapshot(this.onCollectionUpdate);
 
-          // Get messages from firestore
-          this.referenceChatMessages = firebase.firestore().collection('messages');
-
-          // listening to messages collection changes
-          this.unsubscribe = this.referenceChatMessages
-            .orderBy("createdAt", "desc")
-            .onSnapshot(this.onCollectionUpdate);
-        });
+        this.saveMessages();
       } else {
+        this.setState({
+          isConnected: false,
+        });
         // Load messages from asyncStorage when offline
         this.getMessages();
         // Add offline message
