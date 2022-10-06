@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "chat-app",
+    "owner": "djude",
     "slug": "chat-app",
     "version": "1.0.0",
     "orientation": "portrait",
