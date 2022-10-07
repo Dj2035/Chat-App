@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-  View, StyleSheet, Platform, KeyboardAvoidingView
+  View, StyleSheet, Platform, KeyboardAvoidingView, Clipboard
 } from 'react-native';
-import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat'
+import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
+//import Clipboard from '@react-native-clipboard/clipboard';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
@@ -199,7 +200,6 @@ export default class Chat extends React.Component {
     }), () => {
       this.addMessages(messages[0]);
       this.saveMessages();
-      this.deleteMessages();
     });
   }
 
@@ -240,9 +240,16 @@ export default class Chat extends React.Component {
     return null;
   }
 
+  //code to delete a message
+  onDelete(messageIdToDelete) {
+    this.setState(previousState =>
+      ({ messages: previousState.messages.filter(message => message._id !== messageIdToDelete) }))
+  }
+
+  // Action sheet for long press on a message
   handleLongPress(context, message) {
     console.log("long press function");
-    const options = ["Delete Message", "Cancel"];
+    const options = ["Copy", "Delete Message", "Cancel"];
     const cancelButtonIndex = options.length - 1;
     context.actionSheet().showActionSheetWithOptions(
       {
@@ -252,9 +259,11 @@ export default class Chat extends React.Component {
       (buttonIndex) => {
         switch (buttonIndex) {
           case 0:
+            Clipboard.setString(message.text);
+            return;
+          case 1:
             console.log("deleting message");
-            return this.deleteMessages();
-          default:
+            this.onDelete(messageIdToDelete)
             break;
         }
       }
@@ -267,14 +276,14 @@ export default class Chat extends React.Component {
     return (
       <View style={[styles.container, { backgroundColor: color }]} >
         <GiftedChat
+          messages={this.state.messages}
+          onSend={messages => this.onSend(messages)}
           renderCustomView={this.renderCustomView}
           renderActions={this.renderCustomActions}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
           renderBubble={this.renderBubble.bind(this)}
           alwaysShowSend
-          messages={this.state.messages}
           showAvatarForEveryMessage={true}
-          onSend={messages => this.onSend(messages)}
           onLongPress={this.handleLongPress}
           user={{
             _id: this.state.uid,
