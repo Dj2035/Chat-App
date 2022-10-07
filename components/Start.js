@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '300',
     color: '#757083',
-    opacity: '50%',
+    //opacity: '50%',
   },
   colors: {
     flexDirection: 'row',
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   color: {
-    borderRadius: '50%',
+    borderRadius: 50,
     width: 50,
     height: 50,
     marginRight: 30,
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     width: '88%',
     flex: 1,
-    justifyContent: 'end',
+    //justifyContent: 'end',
   },
   button: {
     height: 60,
