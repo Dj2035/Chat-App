@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
+//import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import firebase from 'firebase';
@@ -18,11 +18,12 @@ class CustomActions extends Component {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     try {
       if (status === "granted") {
-        let result = await ImagePicker.launchImageLibraryAsync({
+        const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
         }).catch((error) => console.log(error));
 
         if (!result.cancelled) {
+          console.log(firebase.auth().currentUser ? firebase.auth().currentUser.uid : "not signed in")
           const imageUrl = await this.uploadImageFetch(result.uri);
           this.props.onSend({ image: imageUrl });
         }
