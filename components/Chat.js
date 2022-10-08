@@ -158,13 +158,11 @@ export default class Chat extends React.Component {
 
         this.saveMessages();
       } else {
-        this.setState({
-          isConnected: false,
-        });
+        this.setState({ isConnected: false });
         // Load messages from asyncStorage when offline
         this.getMessages();
         // Add offline message
-        this.props.navigation.setOptions({ title: `${name} (offline)` });
+        this.props.navigation.setOptions({ title: `${name} (offline)` }); s
         console.log('offline');
       }
 
@@ -244,10 +242,11 @@ export default class Chat extends React.Component {
   onDelete(messageIdToDelete) {
     this.setState(previousState =>
       ({ messages: previousState.messages.filter(message => message._id !== messageIdToDelete) }))
+
   }
 
   // Action sheet for long press on a message
-  handleLongPress(context, message) {
+  handleLongPress = (context, message) => {
     console.log("long press function");
     const options = ["Copy", "Delete Message", "Cancel"];
     const cancelButtonIndex = options.length - 1;
@@ -263,8 +262,7 @@ export default class Chat extends React.Component {
             return;
           case 1:
             console.log("deleting message");
-            this.onDelete(messageIdToDelete)
-            break;
+            this.onDelete(message);
         }
       }
     );
