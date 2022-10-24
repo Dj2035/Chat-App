@@ -92,6 +92,7 @@ export default class Chat extends React.Component {
   async saveMessages() {
     try {
       await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+      console.log(this.state.messages);
     } catch (error) {
       console.log(error.message);
     }
@@ -239,9 +240,11 @@ export default class Chat extends React.Component {
   }
 
   //code to delete a message
-  onDelete(messageIdToDelete) {
+  onDelete = async (messageId) => {
     this.setState(previousState =>
-      ({ messages: previousState.messages.filter(message => message._id !== messageIdToDelete) }))
+      ({ messages: previousState.messages.filter(message => message._id !== messageId) }))
+
+    this.referenceChatMessages.doc(messages._id).delete();
 
   }
 
@@ -261,8 +264,8 @@ export default class Chat extends React.Component {
             Clipboard.setString(message.text);
             return;
           case 1:
-            console.log("deleting message");
-            this.onDelete(message);
+            console.log(message);
+            context.onDelete(message._id);
         }
       }
     );
@@ -282,7 +285,7 @@ export default class Chat extends React.Component {
           renderBubble={this.renderBubble.bind(this)}
           alwaysShowSend
           showAvatarForEveryMessage={true}
-          onLongPress={this.handleLongPress}
+          onLongPress={messages => this.handleLongPress(this, messages)}
           user={{
             _id: this.state.uid,
             name: name,

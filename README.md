@@ -1,5 +1,7 @@
 # Chat App
 
+![Chat app](assets/chat-app.jpg)
+
 ## Description
 This is a native mobile app built using React Native that allows users to enter a chat room, then send messages, images, and their location.
 
